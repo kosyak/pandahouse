@@ -1,6 +1,7 @@
 import re
 import json
 import codecs
+import ast
 
 
 SPECIAL_CHARS = {
@@ -46,10 +47,4 @@ def decode_escapes(s):
 
 
 def decode_array(clickhouse_array):
-    # Double quotes need escaping before parsed as JSON
-    clickhouse_array = clickhouse_array.replace('"', '\\"')
-    # Any non-escaped single quotes should be replaced with double quotes
-    clickhouse_array = re.sub("(?<!\\\\)'", '"', clickhouse_array)
-    # Finally any escaped single quotes can be replaced with unescaped ones
-    clickhouse_array = clickhouse_array.replace("\\'", "'")
-    return json.loads(clickhouse_array)
+    return ast.literal_eval(clickhouse_array)
