@@ -53,19 +53,13 @@ def decode_array(clickhouse_array):
 
 
 def py_to_pickle(s: Union[str, bytes]) -> bytes:
+    from pytopickle import py_to_pickle as lib
+
     if isinstance(s, bytes):
         in_bytes = s
     else:
         in_bytes = s.encode("utf8")
     in_ = ctypes.create_string_buffer(in_bytes)
     in_len = len(in_bytes)
-    out_len = in_len + 1000  # should always be enough (some buffer len + len of literal Python code)
-    out_ = ctypes.create_string_buffer(out_len)
 
-    lib = ctypes.CDLL("pytopickle")
-    lib.py_to_pickle.argtypes = (ctypes.c_char_p, ctypes.c_size_t, ctypes.c_char_p, ctypes.c_size_t)
-    lib.py_to_pickle.restype = ctypes.c_int
-
-    res = lib.py_to_pickle(in_, in_len, out_, out_len)
-    assert res == 0, "there was some error in %r" % in_bytes
-    return out_.raw
+    return lib(in_, in_len).encode("utf8")
