@@ -2,10 +2,7 @@
 // Copyright (partly) 2021 Albert Zeyer
 // This also contains some code from CPython.
 
-// c++ -std=c++11 py-to-pickle.cpp -o py-to-pickle.bin
 // c++ -std=c++11 -DLIB py-to-pickle.cpp -shared -fPIC -o libpytopickle.so
-// ./py-to-pickle.bin demo.txt demo.pkl
-// python3 -c "import pickle; pickle.load(open('demo.pkl', 'rb'))"
 
 // https://github.com/python/cpython/blob/master/Modules/_pickle.c
 // load_dict
@@ -14,6 +11,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <Python.h>
 
 const int protocol = 3;
 
@@ -97,43 +95,6 @@ enum opcode {
 	NEXT_BUFFER      = '\x97',
 	READONLY_BUFFER  = '\x98'
 };
-
-static void _PyFloat_Pack8(double x, unsigned char *p, int le) {
-	typedef enum {
-		unset, ieee_big_endian_format, ieee_little_endian_format
-	} float_format_type;
-	static float_format_type double_format = unset;
-
-#if __SIZEOF_DOUBLE__ == 8
-	if(double_format == unset) {
-		double x = 9006104071832581.0;
-		if (memcmp(&x, "\x43\x3f\xff\x01\x02\x03\x04\x05", 8) == 0)
-			double_format = ieee_big_endian_format;
-		else if (memcmp(&x, "\x05\x04\x03\x02\x01\xff\x3f\x43", 8) == 0)
-			double_format = ieee_little_endian_format;
-		else {
-			fprintf(stderr, "invalid double format");
-			abort();
-		}
-	}
-#else
-#error invalid __SIZEOF_DOUBLE__
-#endif
-
-	const unsigned char *s = (unsigned char*)&x;
-	int i, incr = 1;
-
-	if ((double_format == ieee_little_endian_format && !le)
-		|| (double_format == ieee_big_endian_format && le)) {
-		p += 7;
-		incr = -1;
-	}
-
-	for (i = 0; i < 8; i++) {
-		*p = *s++;
-		p += incr;
-	}
-}
 
 static void _write_size64(char *out, size_t value) {
 	size_t i;
@@ -521,42 +482,40 @@ public:
 	}
 };
 
-#ifdef LIB
-extern "C"
-int py_to_pickle(const char* in, size_t in_len, char* out, size_t out_len) {
-	MemReader reader(in, in_len);
+PyObject* py_to_pickle(PyObject* /* unused module reference */, PyObject* in, PyObject* in_len) {
+    auto in_encoded = PyUnicode_AsUTF8String(in);
+    auto out_len = PyLong_AsSize_t(in_len) + 1000;
+	MemReader reader(PyBytes_AsString(in_encoded), PyLong_AsSize_t(in_len));
+	char* out = (char*)PyMem_RawMalloc(out_len);
 	MemWriter writer(out, out_len);
 	Parser parser(&reader, &writer);
 	parser.full_pass();
-	if(parser.got_error)
-		return 1;
-	if(writer.got_error)
-		return 2;
-	return 0;
+	// if(parser.got_error)
+	// 	return 1;
+	// if(writer.got_error)
+	// 	return 2;
+	// return 0;
+
+	auto result = PyUnicode_FromStringAndSize(out, out_len);
+	PyMem_RawFree(out);
+	Py_XDECREF(in_encoded);
+	return result;
 }
 
-#else  // LIB
+static PyMethodDef pytopickle_methods[] = {
+    // The first property is the name exposed to Python, fast_tanh
+    // The second is the C++ function with the implementation
+    // METH_O means it takes a single PyObject argument
+    { "py_to_pickle", (PyCFunction)py_to_pickle, METH_O, nullptr },
 
-int main(int argc, char** argv) {
-	if(argc <= 2) {
-		printf("usage: %s <in-py-file> <out-pickle-file>\n", argv[0]);
-		return -1;
-	}
+    // Terminate the array with an object containing nulls.
+    { nullptr, nullptr, 0, nullptr }
+};
 
-	FileReader reader(argv[1]);
-	if(!reader.valid()) {
-		fprintf(stderr, "cannot open input file %s\n", argv[1]);
-		return 1;
-	}
-
-	FileWriter writer(argv[2]);
-	if(!writer.valid()) {
-		fprintf(stderr, "cannot open output file %s\n", argv[2]);
-		return 1;
-	}
-
-	Parser parser(&reader, &writer);
-	parser.full_pass();
-	return 0;
-}
-#endif
+static PyModuleDef pytopickle_module = {
+    PyModuleDef_HEAD_INIT,
+    "pytopickle",
+    "Faster eval",
+    0,
+    pytopickle_methods
+};

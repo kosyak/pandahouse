@@ -8,7 +8,7 @@ from setuptools import Extension, setup
 
 import versioneer
 
-extra_compile_args = ['-DLIB']
+extra_compile_args = []
 if not sys.platform.startswith('win'):
     extra_compile_args.append('-std=c++11')
 
