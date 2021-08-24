@@ -482,7 +482,10 @@ public:
 	}
 };
 
-PyObject* py_to_pickle(PyObject* /* unused module reference */, PyObject* in, PyObject* in_len) {
+PyObject* py_to_pickle(PyObject* /* unused module reference */, PyObject* args) {
+    PyObject *in;
+    PyObject *in_len;
+    PyArg_ParseTuple(args, "OO", &in, &in_len);
     auto in_encoded = PyUnicode_AsUTF8String(in);
     auto out_len = PyLong_AsSize_t(in_len) + 1000;
 	MemReader reader(PyBytes_AsString(in_encoded), PyLong_AsSize_t(in_len));
@@ -499,6 +502,8 @@ PyObject* py_to_pickle(PyObject* /* unused module reference */, PyObject* in, Py
 	auto result = PyUnicode_FromStringAndSize(out, out_len);
 	PyMem_RawFree(out);
 	Py_XDECREF(in_encoded);
+	Py_XDECREF(in);
+	Py_XDECREF(in_len);
 	return result;
 }
 
@@ -506,7 +511,7 @@ static PyMethodDef pytopickle_methods[] = {
     // The first property is the name exposed to Python, fast_tanh
     // The second is the C++ function with the implementation
     // METH_O means it takes a single PyObject argument
-    { "py_to_pickle", (PyCFunction)py_to_pickle, METH_O, nullptr },
+    { "py_to_pickle", (PyCFunction)py_to_pickle, METH_VARARGS, nullptr },
 
     // Terminate the array with an object containing nulls.
     { nullptr, nullptr, 0, nullptr }
