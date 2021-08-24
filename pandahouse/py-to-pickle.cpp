@@ -519,3 +519,7 @@ static PyModuleDef pytopickle_module = {
     0,
     pytopickle_methods
 };
+
+PyMODINIT_FUNC PyInit_pytopickle() {
+    return PyModule_Create(&pytopickle_module);
+}
