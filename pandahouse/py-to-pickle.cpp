@@ -483,18 +483,15 @@ public:
 	}
 };
 
-PyObject* py_to_pickle(PyObject* /* unused module reference */, PyObject* args) {
-    PyObject *in;
-    PyObject *in_len;
-    PyArg_ParseTuple(args, "OO", &in, &in_len);
+PyObject* py_to_pickle(PyObject* /* unused module reference */, PyObject* in) {
+    auto in_len = PyBytes_Size(in);
     std::cout << "C API" << "OK " << in_len << std::endl;
     auto out_len = PyLong_AsSize_t(in_len) + 1000;
     std::cout << "C API" << "OK " << out_len << std::endl;
     try{
     auto a1 = PyBytes_AsString(in);
-    auto a2 = PyLong_AsSize_t(in_len);
-    std::cout << "C API" << "OK " << a1 << "; " << a2 << std::endl;
-	MemReader reader(a1, a2);
+    std::cout << "C API" << "OK " << a1 << "; " << PyBytes_Size << std::endl;
+	MemReader reader(a1, PyBytes_Size);
     std::cout << "C API" << "OK" << std::endl;
 	char* out = (char*)PyMem_RawMalloc(out_len);
 	MemWriter writer(out, out_len);
@@ -505,8 +502,6 @@ PyObject* py_to_pickle(PyObject* /* unused module reference */, PyObject* args) 
 	auto result = PyBytes_FromString(out);
     std::cout << "C API" << "OK " << out << "; " << out_len << "; " << result << std::endl;
 	PyMem_RawFree(out);
-	Py_XDECREF(in);
-	Py_XDECREF(in_len);
 	return result;
     } catch (...) { PyErr_Print(); }
     return NULL;
