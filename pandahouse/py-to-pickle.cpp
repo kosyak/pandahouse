@@ -494,7 +494,9 @@ PyObject* py_to_pickle(PyObject* /* unused module reference */, PyObject* args) 
     auto out_len = PyLong_AsSize_t(in_len) + 1000;
     std::cout << "C API" << "OK " << out_len << std::endl;
     // auto a1 = PyBytes_AsString(in_encoded);
+    try{
     auto a1 = PyBytes_AsString(in);
+    } catch (TypeError *e) { std::cout << "Error: " << *e << std::endl; }
     std::cout << "C API" << "OK " << *in << std::endl;
     auto a2 = PyLong_AsSize_t(in_len);
 	MemReader reader(a1, a2);
