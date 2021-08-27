@@ -3,7 +3,9 @@ import re
 import json
 import codecs
 import ast
+import pickle
 from typing import Union
+from pytopickle import py_to_pickle
 
 SPECIAL_CHARS = {
     '\b': '\\b',
@@ -48,19 +50,5 @@ def decode_escapes(s):
 
 
 def decode_array(clickhouse_array):
-    result = py_to_pickle(clickhouse_array)
-    return result
+    return pickle.load(py_to_pickle(clickhouse_array))
     # return ast.literal_eval(clickhouse_array)
-
-
-def py_to_pickle(s: Union[str, bytes]) -> bytes:
-    from pytopickle import py_to_pickle as lib
-    import pickle
-
-    if isinstance(s, bytes):
-        in_bytes = s
-    else:
-        in_bytes = s.encode("utf8")
-
-    lib_result = lib(in_bytes)
-    return pickle.loads(lib_result)
