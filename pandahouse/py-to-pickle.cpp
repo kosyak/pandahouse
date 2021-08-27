@@ -490,12 +490,19 @@ PyObject* py_to_pickle(PyObject* /* unused module reference */, PyObject* args) 
     PyArg_ParseTuple(args, "OO", &in, &in_len);
     std::cout << "C API" << "OK" << std::endl;
     auto in_encoded = PyUnicode_AsUTF8String(in);
+    std::cout << "C API" << "OK" << std::endl;
     auto out_len = PyLong_AsSize_t(in_len) + 1000;
+    std::cout << "C API" << "OK" << std::endl;
 	MemReader reader(PyBytes_AsString(in_encoded), PyLong_AsSize_t(in_len));
+    std::cout << "C API" << "OK" << std::endl;
 	char* out = (char*)PyMem_RawMalloc(out_len);
+    std::cout << "C API" << "OK" << std::endl;
 	MemWriter writer(out, out_len);
+    std::cout << "C API" << "OK" << std::endl;
 	Parser parser(&reader, &writer);
+    std::cout << "C API" << "OK" << std::endl;
 	parser.full_pass();
+    std::cout << "C API" << "OK" << std::endl;
 	// if(parser.got_error)
 	// 	return 1;
 	// if(writer.got_error)
@@ -503,10 +510,15 @@ PyObject* py_to_pickle(PyObject* /* unused module reference */, PyObject* args) 
 	// return 0;
 
 	auto result = PyUnicode_FromStringAndSize(out, out_len);
+    std::cout << "C API" << "OK" << std::endl;
 	PyMem_RawFree(out);
+    std::cout << "C API" << "OK" << std::endl;
 	Py_XDECREF(in_encoded);
+    std::cout << "C API" << "OK" << std::endl;
 	Py_XDECREF(in);
+    std::cout << "C API" << "OK" << std::endl;
 	Py_XDECREF(in_len);
+    std::cout << "C API" << "OK" << std::endl;
 	return result;
 }
 
