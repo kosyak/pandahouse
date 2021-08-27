@@ -499,7 +499,7 @@ PyObject* py_to_pickle(PyObject* /* unused module reference */, PyObject* in) {
 	parser.full_pass();
     std::cout << "C API" << "OK: " << parser.got_error << "; " << writer.got_error << std::endl;
 
-	auto result = PyBytes_FromString(out);
+	auto result = PyBytes_FromStringAndSize(out, out_len);
     std::cout << "C API" << "OK " << out << "; " << out_len << "; " << result << std::endl;
 	PyMem_RawFree(out);
 	return result;
