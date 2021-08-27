@@ -490,7 +490,7 @@ PyObject* py_to_pickle(PyObject* /* unused module reference */, PyObject* args) 
     PyArg_ParseTuple(args, "OO", &in, &in_len);
     std::cout << "C API" << "OK" << std::endl;
     auto in_encoded = PyUnicode_AsUTF8String(in);
-    std::cout << "C API" << "OK" << std::endl;
+    std::cout << "C API" << "OK " << in_len << std::endl;
     auto out_len = PyLong_AsSize_t(in_len) + 1000;
     std::cout << "C API" << "OK" << std::endl;
 	MemReader reader(PyBytes_AsString(in_encoded), PyLong_AsSize_t(in_len));
