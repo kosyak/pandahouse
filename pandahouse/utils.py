@@ -48,12 +48,14 @@ def decode_escapes(s):
 
 
 def decode_array(clickhouse_array):
-    return py_to_pickle(clickhouse_array)
+    result = py_to_pickle(clickhouse_array)
+    return result
     # return ast.literal_eval(clickhouse_array)
 
 
 def py_to_pickle(s: Union[str, bytes]) -> bytes:
     from pytopickle import py_to_pickle as lib
+    import pickle
 
     if isinstance(s, bytes):
         in_bytes = s
@@ -62,5 +64,4 @@ def py_to_pickle(s: Union[str, bytes]) -> bytes:
     in_len = len(in_bytes)
 
     lib_result = lib(in_bytes, in_len)
-    return lib_result.encode("utf8")
-
+    return pickle.loads(lib_result)
