@@ -496,8 +496,7 @@ PyObject* py_to_pickle(PyObject* /* unused module reference */, PyObject* args) 
     // auto a1 = PyBytes_AsString(in_encoded);
     try{
     auto a1 = PyBytes_AsString(in);
-    } catch (TypeError *e) { std::cout << "Error: " << *e << std::endl; }
-    std::cout << "C API" << "OK " << *in << std::endl;
+    std::cout << "C API" << "OK " << in << std::endl;
     auto a2 = PyLong_AsSize_t(in_len);
 	MemReader reader(a1, a2);
     std::cout << "C API" << "OK" << std::endl;
@@ -518,14 +517,16 @@ PyObject* py_to_pickle(PyObject* /* unused module reference */, PyObject* args) 
 	auto result = PyUnicode_FromStringAndSize(out, out_len);
     std::cout << "C API" << "OK" << std::endl;
 	PyMem_RawFree(out);
-    std::cout << "C API" << "OK" << std::endl;
-	Py_XDECREF(in_encoded);
+    // std::cout << "C API" << "OK" << std::endl;
+    // Py_XDECREF(in_encoded);
     std::cout << "C API" << "OK" << std::endl;
 	Py_XDECREF(in);
     std::cout << "C API" << "OK" << std::endl;
 	Py_XDECREF(in_len);
     std::cout << "C API" << "OK" << std::endl;
 	return result;
+    } catch (...) { PyErr_Print(); }
+    return NULL;
 }
 
 static PyMethodDef pytopickle_methods[] = {
