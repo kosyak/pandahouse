@@ -10,7 +10,7 @@
 #include <string>
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
+#include <cstring>
 #include <Python.h>
 #include <iostream>
 
@@ -496,8 +496,8 @@ PyObject* py_to_pickle(PyObject* /* unused module reference */, PyObject* args) 
     // auto a1 = PyBytes_AsString(in_encoded);
     try{
     auto a1 = PyBytes_AsString(in);
-    std::cout << "C API" << "OK " << in << std::endl;
     auto a2 = PyLong_AsSize_t(in_len);
+    std::cout << "C API" << "OK " << a1 << "; " << a2 << std::endl;
 	MemReader reader(a1, a2);
     std::cout << "C API" << "OK" << std::endl;
 	char* out = (char*)PyMem_RawMalloc(out_len);
