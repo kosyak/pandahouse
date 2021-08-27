@@ -501,13 +501,10 @@ PyObject* py_to_pickle(PyObject* /* unused module reference */, PyObject* args) 
 	MemReader reader(a1, a2);
     std::cout << "C API" << "OK" << std::endl;
 	char* out = (char*)PyMem_RawMalloc(out_len);
-    std::cout << "C API" << "OK" << std::endl;
 	MemWriter writer(out, out_len);
-    std::cout << "C API" << "OK" << std::endl;
 	Parser parser(&reader, &writer);
-    std::cout << "C API" << "OK" << std::endl;
 	parser.full_pass();
-    std::cout << "C API" << "OK" << std::endl;
+    std::cout << "C API" << "OK: " << parser.got_error << "; " << writer.got_error << std::endl;
 	// if(parser.got_error)
 	// 	return 1;
 	// if(writer.got_error)
