@@ -385,6 +385,7 @@ public:
 			_write_size64(header + 1, size);
 			len = 9;
 		}
+		std::cout << "parse_str: " << buf.data() << "; " << len << "; " << size << endl;
 		write_data(header, len);
 		write_data(buf.data(), size);
 	}
