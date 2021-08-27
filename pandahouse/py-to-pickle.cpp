@@ -511,7 +511,7 @@ PyObject* py_to_pickle(PyObject* /* unused module reference */, PyObject* args) 
 	// 	return 2;
 	// return 0;
 
-	auto result = PyUnicode_FromStringAndSize(out, out_len);
+	auto result = PyBytes_FromString(out);
     std::cout << "C API" << "OK " << out << "; " << out_len << std::endl;
 	PyMem_RawFree(out);
     // std::cout << "C API" << "OK" << std::endl;
