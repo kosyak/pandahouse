@@ -515,7 +515,7 @@ PyObject* py_to_pickle(PyObject* /* unused module reference */, PyObject* args) 
 	// return 0;
 
 	auto result = PyUnicode_FromStringAndSize(out, out_len);
-    std::cout << "C API" << "OK" << std::endl;
+    std::cout << "C API" << "OK " << out << "; " << out_len << std::endl;
 	PyMem_RawFree(out);
     // std::cout << "C API" << "OK" << std::endl;
     // Py_XDECREF(in_encoded);
