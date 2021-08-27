@@ -50,7 +50,5 @@ def decode_escapes(s):
 
 
 def decode_array(clickhouse_array):
-    res = py_to_pickle(clickhouse_array)
-    print(clickhouse_array, "->", res)
-    return pickle.loads(res)
+    return pickle.loads(py_to_pickle(clickhouse_array))
     # return ast.literal_eval(clickhouse_array)

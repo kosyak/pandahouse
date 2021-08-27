@@ -385,7 +385,6 @@ public:
 			_write_size64(header + 1, size);
 			len = 9;
 		}
-		std::cout << "parse_str: " << buf.data() << "; " << len << "; " << size << std::endl;
 		write_data(header, len);
 		write_data(buf.data(), size);
 	}
@@ -487,24 +486,17 @@ public:
 PyObject* py_to_pickle(PyObject* /* unused module reference */, PyObject* in) {
     Py_ssize_t in_len;
     auto in_raw = PyUnicode_AsUTF8AndSize(in, &in_len);
-    std::cout << "C API" << "OK " << in_len << std::endl;
     auto out_len = in_len + 1000;
-    try{
-    std::cout << "C API" << "OK " << in_raw << "; " << in_len << std::endl;
+
 	MemReader reader(in_raw, in_len);
-    std::cout << "C API" << "OK" << std::endl;
 	char* out = (char*)PyMem_RawMalloc(out_len);
 	MemWriter writer(out, out_len);
 	Parser parser(&reader, &writer);
 	parser.full_pass();
-    std::cout << "C API" << "OK: " << parser.got_error << "; " << writer.got_error << std::endl;
 
 	auto result = PyBytes_FromStringAndSize(out, out_len);
-    std::cout << "C API" << "OK " << out << "; " << out_len << "; " << result << std::endl;
 	PyMem_RawFree(out);
 	return result;
-    } catch (...) { PyErr_Print(); }
-    return NULL;
 }
 
 static PyMethodDef pytopickle_methods[] = {
