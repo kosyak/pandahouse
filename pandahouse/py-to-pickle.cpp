@@ -511,7 +511,7 @@ static PyMethodDef pytopickle_methods[] = {
     // The first property is the name exposed to Python, fast_tanh
     // The second is the C++ function with the implementation
     // METH_O means it takes a single PyObject argument
-    { "py_to_pickle", (PyCFunction)py_to_pickle, METH_VARARGS, nullptr },
+    { "py_to_pickle", (PyCFunction)py_to_pickle, METH_O, nullptr },
 
     // Terminate the array with an object containing nulls.
     { nullptr, nullptr, 0, nullptr }
