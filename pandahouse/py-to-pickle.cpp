@@ -12,6 +12,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <Python.h>
+#include <iostream>
 
 const int protocol = 3;
 
@@ -485,7 +486,9 @@ public:
 PyObject* py_to_pickle(PyObject* /* unused module reference */, PyObject* args) {
     PyObject *in;
     PyObject *in_len;
+    std::cout << "C API" << "OK" << std::endl;
     PyArg_ParseTuple(args, "OO", &in, &in_len);
+    std::cout << "C API" << "OK" << std::endl;
     auto in_encoded = PyUnicode_AsUTF8String(in);
     auto out_len = PyLong_AsSize_t(in_len) + 1000;
 	MemReader reader(PyBytes_AsString(in_encoded), PyLong_AsSize_t(in_len));
