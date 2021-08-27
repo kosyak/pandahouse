@@ -61,4 +61,6 @@ def py_to_pickle(s: Union[str, bytes]) -> bytes:
         in_bytes = s.encode("utf8")
     in_len = len(in_bytes)
 
-    return lib(in_bytes, in_len).encode("utf8")
+    lib_result = lib(in_bytes, in_len)
+    return lib_result.encode("utf8")
+
