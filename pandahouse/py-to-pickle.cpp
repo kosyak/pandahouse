@@ -486,12 +486,11 @@ public:
 PyObject* py_to_pickle(PyObject* /* unused module reference */, PyObject* in) {
     auto in_len = PyBytes_Size(in);
     std::cout << "C API" << "OK " << in_len << std::endl;
-    auto out_len = PyLong_AsSize_t(in_len) + 1000;
-    std::cout << "C API" << "OK " << out_len << std::endl;
+    auto out_len = in_len + 1000;
     try{
     auto a1 = PyBytes_AsString(in);
-    std::cout << "C API" << "OK " << a1 << "; " << PyBytes_Size << std::endl;
-	MemReader reader(a1, PyBytes_Size);
+    std::cout << "C API" << "OK " << a1 << "; " << in_len << std::endl;
+	MemReader reader(a1, in_len);
     std::cout << "C API" << "OK" << std::endl;
 	char* out = (char*)PyMem_RawMalloc(out_len);
 	MemWriter writer(out, out_len);
